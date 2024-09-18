@@ -6,35 +6,33 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 
 export default function FormularioRegistro() {
-  // Estados para guardar los valores de los campos del formulario
   const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
   const [mensaje, setMensaje] = useState("");
-
-  // Estado para guardar los errores
   const [errors, setErrors] = useState({ nombre: "", email: "", mensaje: "" });
+  const [loading, setLoading] = useState(false); // Estado para controlar el spinner
 
-  // Validaciones simples
   const validate = () => {
     let valid = true;
     const nuevoError = { nombre: "", email: "", mensaje: "" };
 
     if (!nombre) {
-      nuevoError.nombre = "Nombre es requerido";
+      nuevoError.nombre = "Ingrese un nombre por favor";
       valid = false;
     }
     if (!email) {
-      nuevoError.email = "Email es requerido";
+      nuevoError.email = "El email debe contener contenido@dominio.com";
       valid = false;
     } else if (!/\S+@\S+\.\S+/.test(email)) {
-      nuevoError.email = "Ingresa un correo correcto";
+      nuevoError.email = "Ingresa un correo válido";
       valid = false;
     }
     if (!mensaje) {
-      nuevoError.mensaje = "Mensaje es requerido";
+      nuevoError.mensaje = "El mensaje es un campo obligatorio";
       valid = false;
     } else if (mensaje.length < 10) {
       nuevoError.mensaje = "El mensaje debe tener al menos 10 caracteres";
@@ -45,10 +43,21 @@ export default function FormularioRegistro() {
     return valid;
   };
 
-  // Función para manejar el envío del formulario
   const handleSubmit = () => {
     if (validate()) {
-      Alert.alert("Éxito", `Nombre: ${nombre}, Email: ${email}, Mensaje: ${mensaje}`);
+      setLoading(true); // Activar el spinner
+
+      // Simular una carga (por ejemplo, una solicitud a la API)
+      setTimeout(() => {
+        Alert.alert("Éxito", `Nombre: ${nombre}, Email: ${email}, Mensaje: ${mensaje}`);
+
+        // Limpiar los campos del formulario
+        setNombre("");
+        setEmail("");
+        setMensaje("");
+        setErrors({ nombre: "", email: "", mensaje: "" }); // Limpiar errores también
+        setLoading(false); // Desactivar el spinner
+      }, 2000); // Simular carga de 2 segundos
     }
   };
 
@@ -82,8 +91,12 @@ export default function FormularioRegistro() {
       {errors.mensaje ? <Text style={styles.errorText}>{errors.mensaje}</Text> : null}
 
       {/* Botón para enviar el formulario */}
-      <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-        <Text style={styles.submitButtonText}>Registrar</Text>
+      <TouchableOpacity style={styles.submitButton} onPress={handleSubmit} disabled={loading}>
+        {loading ? (
+          <ActivityIndicator size="small" color="#ffffff" />
+        ) : (
+          <Text style={styles.submitButtonText}>Registrar</Text>
+        )}
       </TouchableOpacity>
     </View>
   );
@@ -92,41 +105,52 @@ export default function FormularioRegistro() {
 // Estilos
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
-    backgroundColor: "#f5f5f5",
+    padding: 40,
+    backgroundColor: "#f8f8f8",
     flex: 1,
   },
   title: {
     fontSize: 28,
-    fontWeight: "bold",
+    fontWeight: "600",
     marginBottom: 20,
     textAlign: "center",
-    color: "#333",
+    color: "#333333",
   },
   input: {
     height: 50,
-    borderColor: "#ddd",
+    borderColor: "#cccccc",
     borderWidth: 1,
     marginBottom: 15,
-    paddingLeft: 10,
-    borderRadius: 10,
-    backgroundColor: "#fff",
+    paddingLeft: 15,
+    borderRadius: 8,
+    backgroundColor: "#ffffff",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 1,
   },
   errorText: {
-    color: "red",
+    color: "#d9534f",
     marginBottom: 10,
   },
   errorInput: {
-    borderColor: "red",
+    borderColor: "#d9534f",
   },
   submitButton: {
-    backgroundColor: "#03dac5",
+    backgroundColor: "#887bff",
     paddingVertical: 15,
-    borderRadius: 10,
+    borderRadius: 8,
     alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 2,
   },
   submitButtonText: {
-    color: "#fff",
+    color: "#ffffff",
     fontWeight: "bold",
+    fontSize: 16,
   },
 });
